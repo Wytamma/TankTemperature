@@ -61,7 +61,8 @@ while True:
                     lastEmailSent = time.time()
 
             else:
-                print(IDs[i], temp)
+                now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                print(now, IDs[i], temp)
 
     temperatures = []
     IDs = []
