@@ -55,8 +55,7 @@ while True:
                     email(
                         "WARNING: %s is outside the temperature range!!!\n\n\
                         Current temperature = %s˚C" % (IDs[i], temp),
-                        "wytamma.wirth@me.com"
-                        ):
+                        "wytamma.wirth@me.com")
                     print("Email sent!")
                     lastEmailSent = time.time()
 
