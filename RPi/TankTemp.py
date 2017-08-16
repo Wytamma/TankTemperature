@@ -3,39 +3,32 @@ import fnmatch
 import time
 import logging
 from gmail import GMail, Message
-from passwords import EMAIL_PASSWORD
+from .passwords import EMAIL_PASSWORD
 
 logging.basicConfig(filename='/home/pi/DS18B20_error.log',
     level=logging.DEBUG,
     format='%(asctime)s %(levelname)s %(name)s %(message)s')
 logger = logging.getLogger(__name__)
 
-lastEmailSent = 0
+
 gmail = GMail('TankTemp <wytamma@gmail.com>', EMAIL_PASSWORD)
 
+def email(msgText, Email):
+    """Sends msgText to Email"""
+    msg = Message(
+        msgText,
+        to = '%s <%s>' % (Email),
+        text = msgText
+        )
+    gmail.send(msg)
 
-def email(msgText):
-    global lastEmailSent
-    if (time.time() - lastEmailSent) / 60 > 5:
-        msg = Message(
-            msgText,
-            to = '%s <%s>' % ("Wytamma", "wytamma.wirth@me.com"),
-            text = msgText
-            )
-        gmail.send(msg)
-        lastEmailSent = time.time()
-        return True
-    else:
-        return False
 
 # Get readings from sensors and print
 minTemp = 20
 maxTemp = 28
+lastEmailSent = 0
 temperatures = []
 IDs = []
-
-
-
 
 while True:
     for filename in os.listdir("/sys/bus/w1/devices"):
@@ -50,16 +43,25 @@ while True:
             else:
                 logger.error("Error reading sensor with ID: %s" % (filename))
 
-    if (len(temperatures)>0):
+    if (len(temperatures) > 0):
         for i, temp in enumerate(temperatures):
             if temp > maxTemp or temp < minTemp:
                 print("*"*50)
                 print("WARNING: %s is outside the temperature range!!!" % IDs[i])
                 print(IDs[i], temp)
                 print("*"*50)
-                if email("WARNING: %s is outside the temperature range!!!\n\nCurrent temperature = %s˚C" % (IDs[i], temp)):
+                # only send an email every 10mins
+                if (time.time() - lastEmailSent) / 60 > 10:
+                    email(
+                        "WARNING: %s is outside the temperature range!!!\n\n\
+                        Current temperature = %s˚C" % (IDs[i], temp),
+                        "wytamma.wirth@me.com"
+                        ):
                     print("Email sent!")
+                    lastEmailSent = time.time()
+
             else:
                 print(IDs[i], temp)
+
     temperatures = []
     IDs = []
