@@ -3,7 +3,7 @@ import fnmatch
 import time
 import logging
 from gmail import GMail, Message
-from .passwords import EMAIL_PASSWORD
+from _passwords import EMAIL_PASSWORD
 
 logging.basicConfig(filename='/home/pi/DS18B20_error.log',
     level=logging.DEBUG,
