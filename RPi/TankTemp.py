@@ -3,7 +3,7 @@ import fnmatch
 import time
 import logging
 from gmail import GMail, Message
-
+from passwords import EMAIL_PASSWORD
 
 logging.basicConfig(filename='/home/pi/DS18B20_error.log',
     level=logging.DEBUG,
@@ -11,7 +11,7 @@ logging.basicConfig(filename='/home/pi/DS18B20_error.log',
 logger = logging.getLogger(__name__)
 
 lastEmailSent = 0
-gmail = GMail('TankTemp <wytamma@gmail.com>','cQ3-GgP-Pdk-GPZ')
+gmail = GMail('TankTemp <wytamma@gmail.com>', EMAIL_PASSWORD)
 
 
 def email(msgText):
