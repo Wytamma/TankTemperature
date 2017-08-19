@@ -33,7 +33,7 @@ def email(msgText, Email):
     """Sends msgText to Email"""
     msg = Message(
         msgText,
-        to='%s <%s>' % (Email),
+        to='%s <%s>' % (Email, Email),
         text=msgText
         )
     gmail.send(msg)\
