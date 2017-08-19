@@ -1,14 +1,28 @@
 import os
 import fnmatch
 import time
-import logging
 from gmail import GMail, Message
 from _passwords import EMAIL_PASSWORD, API_BASE_URL
 import requests
+import argparse
+from datetime import datetime
+
+parser = argparse.ArgumentParser(
+    description='Automated water temperature monitoring system.')
+parser.add_argument(
+    '-i', '--interval', help='Sampling interval (mins)')
+parser.add_argument(
+    '-M', '--max', help='Maximum temperature before warning', required=True)
+parser.add_argument(
+    '-m', '--min', help='Minimum temperature before warning', required=True)
+parser.add_argument(
 
 
+            
+    '-e', '--email', help='Who to Email', required=True)
+
+args = vars(parser.parse_args())
 gmail = GMail('TankTemp <wytamma@gmail.com>', EMAIL_PASSWORD)
-
 
 def email(msgText, Email):
     """Sends msgText to Email"""
@@ -18,7 +32,6 @@ def email(msgText, Email):
         text=msgText
         )
     gmail.send(msg)\
-
 
 # get all probes
 probe_IDs = []
@@ -41,10 +54,10 @@ for probe_ID in probe_IDs:
     print(r.json()['message'])
 
 # Vars
-minTemp = 20
-maxTemp = 28
+minTemp = args['max']
+maxTemp = args['min']
 records = []
-samping_interval = 10  # mins
+samping_interval = args['interval'] or 10  # mins
 
 while True:
     for filename in os.listdir("/sys/bus/w1/devices"):
@@ -73,7 +86,7 @@ while True:
                         )
                     print(msg)
                     try:
-                        email(msg, "wytamma.wirth@me.com")
+                        email(msg, args['email'])
                         print("Email sent!")
                     except:
                         print("Email failed to send!")
