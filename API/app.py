@@ -9,7 +9,8 @@ api = Api(app)
 
 app.config.from_object('config.BaseConfig')
 client = MongoClient(MONGO_URI)
-db = client.test
+# db = client.test
+db = client.production
 
 
 @app.route('/')
