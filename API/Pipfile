@@ -11,3 +11,4 @@ pymongo = "*"
 
 [dev-packages]
 awscli = "*"
+botocore = "==1.5.40"
