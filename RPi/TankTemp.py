@@ -7,12 +7,6 @@ from _passwords import EMAIL_PASSWORD, API_BASE_URL
 import requests
 
 
-logging.basicConfig(filename='/home/pi/DS18B20_error.log',
-                    level=logging.DEBUG,
-                    format='%(asctime)s %(levelname)s %(name)s %(message)s'
-                    )
-logger = logging.getLogger(__name__)
-
 gmail = GMail('TankTemp <wytamma@gmail.com>', EMAIL_PASSWORD)
 
 
@@ -66,6 +60,10 @@ while True:
                 record['probe_ID'] = filename
                 record['time'] = int(round(time.time() * 1000))
                 records.append(record)
+
+                now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                print(now, record['probe_ID'], str(record['temperature'])+"˚C")
+
                 t = record['temperature']
                 if t > maxTemp or t < minTemp:
                     msg = "WARNING: %s is outside the temperature range!!!\n\n\
@@ -79,8 +77,9 @@ while True:
                         print("Email sent!")
                     except:
                         print("Email failed to send!")
+
             else:
-                logger.error("Error reading sensor with ID: %s" % (filename))
+                print("Error reading sensor with ID: %s" % (filename))
 
     # attempt insert
     try:

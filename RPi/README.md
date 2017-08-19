@@ -7,4 +7,5 @@ https://leanpub.com/RPiMRE
 
 ## Software
 clone the repo  
-run `python3 TankTemp.py`
+run `python3 TankTemp.py`  
+It's a good idea to use tmux to keep the shell running after you disconnect the ssh session.
