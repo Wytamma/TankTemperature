@@ -77,7 +77,7 @@ while True:
                 pok = lines[1].find('=')
                 record['temperature'] = float(lines[1][pok+1:pok+6])/1000
                 record['probe_ID'] = filename
-                record['time'] = int(round(time.time() * 1000))
+                record['time'] = int(round(time.time() * 1000))  # milliseconds
                 records.append(record)
 
                 now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")

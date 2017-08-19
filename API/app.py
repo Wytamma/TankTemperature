@@ -106,7 +106,6 @@ class Temps(Resource):
     def post(self):
         """Add to probes from list"""
         args = self.parser.parse_args()
-        print(args['data'])
         results = db.temps.insert_many(args['data'])
         return {"message": "Added %s records" % len(results.inserted_ids)}, 201
 
