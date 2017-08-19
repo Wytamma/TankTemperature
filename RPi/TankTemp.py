@@ -16,7 +16,7 @@ parser.add_argument(
 parser.add_argument(
     '-m', '--min', help='Minimum temperature before warning', required=True, type=float)
 parser.add_argument(
-    '-e', '--email', help='Who to Email', required=True, type=str)
+    '-e', '--email', help='Who to Email', required=True)
 
 args = vars(parser.parse_args())
 gmail = GMail('TankTemp <wytamma@gmail.com>', EMAIL_PASSWORD)
@@ -51,8 +51,8 @@ for probe_ID in probe_IDs:
     print(r.json()['message'])
 
 # Vars
-minTemp = args['max']
-maxTemp = args['min']
+minTemp = args['min']
+maxTemp = args['max']
 records = []
 samping_interval = args['interval'] or 10  # mins
 
@@ -76,12 +76,13 @@ while True:
 
                 t = record['temperature']
                 if t > maxTemp or t < minTemp:
-                    msg = "WARNING: %s is outside the temperature range!!!\n\n\
-                    Current temperature = %s˚C" % (
+                    msg = """WARNING: %s is outside the temperature
+                    range!!!\nCurrent temperature = %s˚C""" % (
                         record['probe_ID'],
                         record['temperature']
                         )
                     print(msg)
+                    print("Sending email to %s" % args['email'])
                     try:
                         email(msg, args['email'])
                         print("Email sent!")
