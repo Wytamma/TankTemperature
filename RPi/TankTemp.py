@@ -46,9 +46,10 @@ for filename in os.listdir("/sys/bus/w1/devices"):
         continue
     probe_IDs.append(filename)
 
-probes = requests.get(API_BASE_URL + '/probes').json()['data']
+probes = [probe['probe_ID'] for probe in requests.get(API_BASE_URL + '/probes').json()['data']]
 
 # add probe to DB if not in it already
+print("Adding probes to database")
 for probe_ID in probe_IDs:
     if probe_ID in probes:
         continue
