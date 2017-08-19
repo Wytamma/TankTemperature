@@ -14,7 +14,7 @@ db = client.test
 
 @app.route('/')
 def index():
-    return "Chralie is gay and writes for the wrong side.", 200
+    return "Welcome.", 200
 
 
 class Probelist(Resource):
