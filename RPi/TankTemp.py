@@ -84,15 +84,12 @@ while True:
 
                 t = record['temperature']
                 if t > maxTemp or t < minTemp:
-                    msg = """WARNING: %s is outside the temperature range!!!
-                    \nCurrent temperature = %s˚C""" % (
-                        record['probe_ID'],
-                        record['temperature']
-                        )
+                    msg = "WARNING: %s is outside the temperature range!!!" % record['probe_ID']
+                    msg2 = "Current temperature = %s˚C" % record['temperature']
                     print(msg)
                     print("Sending email to %s" % args['email'])
                     try:
-                        email(msg, args['email'])
+                        email(msg+"\n"+msg2, args['email'])
                         print("Email sent!")
                     except:
                         print("Email failed to send!")
@@ -116,5 +113,5 @@ while True:
             print(r.json()['message'])
     except:
         print("Request Failed")
-
+    print("Slepping for %s mins" % samping_interval)
     time.sleep(samping_interval*60)
