@@ -108,7 +108,7 @@ class Temps(Resource):
         args = self.parser.parse_args()
         print(args['data'])
         results = db.temps.insert_many(args['data'])
-        return "Added %s records" % len(results.inserted_ids), 201
+        return {"message": "Added %s records" % len(results.inserted_ids)}, 201
 
 
 api.add_resource(Probelist, '/probes')
