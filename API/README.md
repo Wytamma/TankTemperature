@@ -1,10 +1,27 @@
 # Flask Server
-Automated water temperature monitoring system.
+Automated water temperature monitoring system API.
 
-*Unless you need server side rendering for something, I create a separate app with create-react-app and build static assets from that, deploy to s3/cloudfront, and have it talk to my flask app which is API only. Nice separation of concerns, hosting the front end is insanely cheap and stable, and it avoids screwing around with webpack and mashing together JS and Python stuff.*
-
+local
 ```
 $ export FLASK_APP=hello.py
 $ export FLASK_DEBUG=1
 $ flask run
 ```
+
+Production
+```
+$ zappa init
+$ zappa deploy
+```
+
+### API endpoints
+/probes
+  GET - returns a list of probes
+  POST - adds probe to DB | requires: [probe_ID]
+  PUT - Updates probe info | requires: [probe_ID, name]
+/temps
+  POST - adds many temperature records at once
+/temps/<probe_ID>?limit=X
+  GET - returns X most recent records for probe_ID
+/temps/<probe_ID>
+  PUT - Adds record to specific probe_ID
