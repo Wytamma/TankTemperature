@@ -113,5 +113,5 @@ while True:
             print(r.json()['message'])
     except:
         print("Request Failed")
-    print("Slepping for %s mins" % samping_interval)
+    print("Sleeping for %s mins" % samping_interval)
     time.sleep(samping_interval*60)
