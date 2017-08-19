@@ -1,4 +1,6 @@
 
 *.pyc
 
-passwords.py
+_passwords.py
+
+__pycache__

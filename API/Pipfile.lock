@@ -1,0 +1,174 @@
+{
+    "_meta": {
+        "hash": {
+            "sha256": "0857b0a3619c03fd7331cdabadaa2c828c3ecee16639d4059638edf2ad07c014"
+        },
+        "requires": {},
+        "sources": [
+            {
+                "url": "https://pypi.python.org/simple",
+                "verify_ssl": true
+            }
+        ]
+    },
+    "default": {
+        "aniso8601": {
+            "version": "==1.2.1"
+        },
+        "argcomplete": {
+            "version": "==1.8.2"
+        },
+        "base58": {
+            "version": "==0.2.4"
+        },
+        "boto3": {
+            "version": "==1.4.5"
+        },
+        "botocore": {
+            "version": "==1.5.40"
+        },
+        "certifi": {
+            "version": "==2017.7.27.1"
+        },
+        "chardet": {
+            "version": "==3.0.4"
+        },
+        "click": {
+            "version": "==6.7"
+        },
+        "docutils": {
+            "version": "==0.14"
+        },
+        "durationpy": {
+            "version": "==0.5"
+        },
+        "flask": {
+            "version": "==0.12.2"
+        },
+        "flask-restful": {
+            "version": "==0.3.6"
+        },
+        "flask-sqlalchemy": {
+            "version": "==2.2"
+        },
+        "future": {
+            "version": "==0.16.0"
+        },
+        "futures": {
+            "version": "==3.1.1"
+        },
+        "hjson": {
+            "version": "==3.0.0"
+        },
+        "idna": {
+            "version": "==2.6"
+        },
+        "itsdangerous": {
+            "version": "==0.24"
+        },
+        "jinja2": {
+            "version": "==2.9.6"
+        },
+        "jmespath": {
+            "version": "==0.9.3"
+        },
+        "kappa": {
+            "version": "==0.6.0"
+        },
+        "lambda-packages": {
+            "version": "==0.16.1"
+        },
+        "markupsafe": {
+            "version": "==1.0"
+        },
+        "placebo": {
+            "version": "==0.8.1"
+        },
+        "python-dateutil": {
+            "version": "==2.6.1"
+        },
+        "python-slugify": {
+            "version": "==1.2.4"
+        },
+        "pytz": {
+            "version": "==2017.2"
+        },
+        "pyyaml": {
+            "version": "==3.12"
+        },
+        "requests": {
+            "version": "==2.18.4"
+        },
+        "s3transfer": {
+            "version": "==0.1.10"
+        },
+        "six": {
+            "version": "==1.10.0"
+        },
+        "sqlalchemy": {
+            "version": "==1.1.13"
+        },
+        "toml": {
+            "version": "==0.9.2"
+        },
+        "tqdm": {
+            "version": "==4.15.0"
+        },
+        "troposphere": {
+            "version": "==1.9.5"
+        },
+        "unidecode": {
+            "version": "==0.04.21"
+        },
+        "urllib3": {
+            "version": "==1.22"
+        },
+        "werkzeug": {
+            "version": "==0.12.2"
+        },
+        "wheel": {
+            "version": "==0.29.0"
+        },
+        "wsgi-request-logger": {
+            "version": "==0.4.6"
+        },
+        "zappa": {
+            "version": "==0.43.2"
+        }
+    },
+    "develop": {
+        "awscli": {
+            "version": "==1.11.136"
+        },
+        "botocore": {
+            "version": "==1.6.3"
+        },
+        "colorama": {
+            "version": "==0.3.7"
+        },
+        "docutils": {
+            "version": "==0.14"
+        },
+        "jmespath": {
+            "version": "==0.9.3"
+        },
+        "pyasn1": {
+            "version": "==0.3.2"
+        },
+        "python-dateutil": {
+            "version": "==2.6.1"
+        },
+        "pyyaml": {
+            "version": "==3.12"
+        },
+        "rsa": {
+            "version": "==3.4.2"
+        },
+        "s3transfer": {
+            "version": "==0.1.10"
+        },
+        "six": {
+            "version": "==1.10.0"
+        }
+    }
+}
