@@ -1,7 +1,7 @@
 {
     "production": {
         "app_function": "app.app",
-        "s3_bucket": "zappa-qhmmi7r3y",
+        "s3_bucket": "us-east-1-zappa-qhmmi7r3y",
         "aws_region": "us-east-1"
     }
 }
