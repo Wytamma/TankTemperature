@@ -3,66 +3,99 @@ import fnmatch
 import time
 import logging
 from gmail import GMail, Message
-from datetime import datetime
-from _passwords import EMAIL_PASSWORD
+from _passwords import EMAIL_PASSWORD, API_BASE_URL
+import requests
+
 
 logging.basicConfig(filename='/home/pi/DS18B20_error.log',
-    level=logging.DEBUG,
-    format='%(asctime)s %(levelname)s %(name)s %(message)s')
+                    level=logging.DEBUG,
+                    format='%(asctime)s %(levelname)s %(name)s %(message)s'
+                    )
 logger = logging.getLogger(__name__)
 
-
 gmail = GMail('TankTemp <wytamma@gmail.com>', EMAIL_PASSWORD)
+
 
 def email(msgText, Email):
     """Sends msgText to Email"""
     msg = Message(
         msgText,
-        to = '%s <%s>' % (Email),
-        text = msgText
+        to='%s <%s>' % (Email),
+        text=msgText
         )
-    gmail.send(msg)
+    gmail.send(msg)\
 
 
-# Get readings from sensors and print
+# get all probes
+probe_IDs = []
+
+for filename in os.listdir("/sys/bus/w1/devices"):
+    if not fnmatch.fnmatch(filename, '28-*'):
+        continue
+    probe_IDs.append(filename)
+
+probes = requests.get(API_BASE_URL + '/probes').json()['data']
+
+# add probe to DB if not in it already
+for probe_ID in probe_IDs:
+    if probe_ID in probes:
+        continue
+    r = requests.post(
+        API_BASE_URL + '/probes',
+        data={'probe_ID': probe_ID}
+        )
+    print(r.json()['message'])
+
+# Vars
 minTemp = 20
 maxTemp = 28
-lastEmailSent = 0
-temperatures = []
-IDs = []
+records = []
+samping_interval = 10  # mins
 
 while True:
     for filename in os.listdir("/sys/bus/w1/devices"):
+        record = {}
         if not fnmatch.fnmatch(filename, '28-*'):
             continue
+
         with open("/sys/bus/w1/devices/" + filename + "/w1_slave") as f_obj:
             lines = f_obj.readlines()
             if lines[0].find("YES"):
                 pok = lines[1].find('=')
-                temperatures.append(float(lines[1][pok+1:pok+6])/1000)
-                IDs.append(filename)
+                record['temperature'] = float(lines[1][pok+1:pok+6])/1000
+                record['probe_ID'] = filename
+                record['time'] = int(round(time.time() * 1000))
+                records.append(record)
+                t = record['temperature']
+                if t > maxTemp or t < minTemp:
+                    msg = "WARNING: %s is outside the temperature range!!!\n\n\
+                    Current temperature = %s˚C" % (
+                        record['probe_ID'],
+                        record['temperature']
+                        )
+                    print(msg)
+                    try:
+                        email(msg, "wytamma.wirth@me.com")
+                        print("Email sent!")
+                    except:
+                        print("Email failed to send!")
             else:
                 logger.error("Error reading sensor with ID: %s" % (filename))
 
-    if (len(temperatures) > 0):
-        for i, temp in enumerate(temperatures):
-            if temp > maxTemp or temp < minTemp:
-                print("*"*50)
-                print("WARNING: %s is outside the temperature range!!!" % IDs[i])
-                print(IDs[i], temp)
-                print("*"*50)
-                # only send an email every 10mins
-                if (time.time() - lastEmailSent) / 60 > 10:
-                    email(
-                        "WARNING: %s is outside the temperature range!!!\n\n\
-                        Current temperature = %s˚C" % (IDs[i], temp),
-                        "wytamma.wirth@me.com")
-                    print("Email sent!")
-                    lastEmailSent = time.time()
+    # attempt insert
+    try:
+        json = {'data': records}
+        r = requests.post(
+            API_BASE_URL + '/temps', json=json)
+        if r.status_code == 201:
+            # records where successfully added
+            # reset records store
+            # If it fails don't reset so we can try again later
+            records = []
+        else:
+            print("Insert Failed")
+            print(r.json()['message'])
+    except:
+        print("Request Failed")
 
-            else:
-                now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-                print(now, IDs[i], temp)
-
-    temperatures = []
-    IDs = []
+    time.sleep(samping_interval*60)
