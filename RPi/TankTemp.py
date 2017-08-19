@@ -10,16 +10,13 @@ from datetime import datetime
 parser = argparse.ArgumentParser(
     description='Automated water temperature monitoring system.')
 parser.add_argument(
-    '-i', '--interval', help='Sampling interval (mins)')
+    '-i', '--interval', help='Sampling interval (mins)', type=float)
 parser.add_argument(
-    '-M', '--max', help='Maximum temperature before warning', required=True)
+    '-M', '--max', help='Maximum temperature before warning', required=True, type=float)
 parser.add_argument(
-    '-m', '--min', help='Minimum temperature before warning', required=True)
+    '-m', '--min', help='Minimum temperature before warning', required=True, type=float)
 parser.add_argument(
-
-
-            
-    '-e', '--email', help='Who to Email', required=True)
+    '-e', '--email', help='Who to Email', required=True, type=str)
 
 args = vars(parser.parse_args())
 gmail = GMail('TankTemp <wytamma@gmail.com>', EMAIL_PASSWORD)
