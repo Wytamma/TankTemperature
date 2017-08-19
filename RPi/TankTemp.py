@@ -6,6 +6,8 @@ from _passwords import EMAIL_PASSWORD, API_BASE_URL
 import requests
 import argparse
 from datetime import datetime
+import traceback
+import logging
 
 parser = argparse.ArgumentParser(
     description='Automated water temperature monitoring system.')
@@ -17,6 +19,12 @@ parser.add_argument(
     '-m', '--min', help='Minimum temperature before warning', required=True, type=float)
 parser.add_argument(
     '-e', '--email', help='Who to Email', required=True)
+
+logging.basicConfig(filename='TankTemp.log',
+                    level=logging.DEBUG,
+                    format='%(asctime)s %(levelname)s %(name)s %(message)s'
+                    )
+logger = logging.getLogger(__name__)
 
 args = vars(parser.parse_args())
 gmail = GMail('TankTemp <wytamma@gmail.com>', EMAIL_PASSWORD)
@@ -76,8 +84,8 @@ while True:
 
                 t = record['temperature']
                 if t > maxTemp or t < minTemp:
-                    msg = """WARNING: %s is outside the temperature
-                    range!!!\nCurrent temperature = %s˚C""" % (
+                    msg = """WARNING: %s is outside the temperature range!!!
+                    \nCurrent temperature = %s˚C""" % (
                         record['probe_ID'],
                         record['temperature']
                         )
@@ -88,9 +96,10 @@ while True:
                         print("Email sent!")
                     except:
                         print("Email failed to send!")
+                        logger.error(traceback.format_exc())
 
             else:
-                print("Error reading sensor with ID: %s" % (filename))
+                email("Error reading sensor with ID: %s" % (filename), args['email'])
 
     # attempt insert
     try:
