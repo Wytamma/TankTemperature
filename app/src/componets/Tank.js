@@ -65,13 +65,17 @@ class Tank extends React.Component {
   }
 
   componentWillMount() {
+    console.log("Getting data...");
     this.getData(100)
-    setInterval(() => {
-      console.log("Updating data");
-      this.getData(100)
-    }, (1000*60*10));
+
   }
   render() {
+
+    setInterval(() => {
+      console.log("Updating data...");
+      this.getData(100)
+    }, (1000*60*10));
+
     return (
 
       <Col sm={12} md={12} lg={6}>
@@ -99,19 +103,18 @@ class Tank extends React.Component {
     )
   }
   getData = (limit) => {
-    console.log("Getting data..");
     fetch(_Urls.APIBASEURL + "/temps/" + this.props.probe.probe_ID + "?limit="+limit)
     .then(results => {
       return results.json();
     }).then(data => {
-      const reducedData = data.data.map(item => { return item.temperature }).reverse()
+      const reducedData = data.data.map(item => { return item.temperature }).reverse();
       (data.data.length > 0) ?
       this.setState({
         temp: round(data.data[0].temperature, 2)+"˚C",
         temps: reducedData,
         color: setColor(reducedData, 28, 20)
       }):
-      this.setState({temp: "No data"})
+      this.setState({temp: "No data"});
     })
   }
 }
