@@ -2,7 +2,7 @@ import os
 import fnmatch
 import time
 from gmail import GMail, Message
-from _passwords import EMAIL_PASSWORD, API_BASE_URL
+from _passwords import EMAIL_PASSWORD, API_BASE_URL, WEB_APP_URL
 import requests
 import argparse
 from datetime import datetime
@@ -89,8 +89,9 @@ while True:
                     msg2 = "Current temperature = %s˚C" % record['temperature']
                     print(msg)
                     print("Sending email to %s" % args['email'])
+
                     try:
-                        email(msg+"\n"+msg2, args['email'])
+                        email(msg+"\n"+msg2+"\n"+WEB_APP_URL, args['email'])
                         print("Email sent!")
                     except:
                         print("Email failed to send!")

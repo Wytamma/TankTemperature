@@ -88,7 +88,7 @@ class Tank extends React.Component {
           </Sparklines>
           </Col>
           <Col xs={2} style={styles.temp}>
-          <ReactFitText compressor={.3}>
+          <ReactFitText compressor={.35}>
             <h1 style={styles.tempText}>{this.state.temp}</h1>
           </ReactFitText>
           </Col>

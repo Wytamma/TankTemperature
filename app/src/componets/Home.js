@@ -20,7 +20,7 @@ class Home extends React.Component {
       )
     })
     return (
-      <Grid style={{width:"95%"}}>
+      <Grid style={{width:"98%"}}>
         {probes}
       </Grid>
     )
