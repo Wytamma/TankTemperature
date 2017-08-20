@@ -2,7 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { Col, Row } from 'react-bootstrap';
 import _Urls from '../_Urls'
-import { Sparklines, SparklinesLine, SparklinesSpots } from 'react-sparklines';
+import { Sparklines, SparklinesLine } from 'react-sparklines';
 import ReactFitText from 'react-fittext'
 const styles = {
   card: {
