@@ -4,8 +4,5 @@
         "s3_bucket": "us-east-1-zappa-qhmmi7r3y",
         "aws_region": "us-east-1",
         "memory_size": 128,
-        "cors": {
-          "allowed_origin": "*"
-        },
     }
 }

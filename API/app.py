@@ -2,8 +2,10 @@ from flask import Flask
 from pymongo import MongoClient
 from flask_restful import Resource, reqparse, Api
 from _passwords import MONGO_URI
+from flask_cors import CORS, cross_origin
 
 app = Flask(__name__)
+CORS(app)
 api = Api(app)
 
 
