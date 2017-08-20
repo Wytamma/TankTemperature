@@ -43,7 +43,6 @@ const round = (value, precision) => {
 }
 
 const setColor = (temps, maxVal, minVal) => {
-  console.log(temps,maxVal,minVal);
   let color = 'green';
   let min = Math.min.apply(null, temps);
   let max = Math.max.apply(null, temps);
@@ -53,7 +52,6 @@ const setColor = (temps, maxVal, minVal) => {
     if (temps[-1] < minVal || temps[-1] > maxVal) { //the most recnent value
       color = 'red'
     }
-  console.log(color);
   return color
 }
 
@@ -69,6 +67,7 @@ class Tank extends React.Component {
   componentWillMount() {
     this.getData(100)
     setInterval(() => {
+      console.log("Updating data");
       this.getData(100)
     }, (1000*60*10));
   }
@@ -100,12 +99,12 @@ class Tank extends React.Component {
     )
   }
   getData = (limit) => {
+    console.log("Getting data..");
     fetch(_Urls.APIBASEURL + "/temps/" + this.props.probe.probe_ID + "?limit="+limit)
     .then(results => {
       return results.json();
     }).then(data => {
       const reducedData = data.data.map(item => { return item.temperature }).reverse()
-      console.log(reducedData);
       (data.data.length > 0) ?
       this.setState({
         temp: round(data.data[0].temperature, 2)+"˚C",
@@ -113,7 +112,6 @@ class Tank extends React.Component {
         color: setColor(reducedData, 28, 20)
       }):
       this.setState({temp: "No data"})
-      console.log("state", this.state.temps);
     })
   }
 }
