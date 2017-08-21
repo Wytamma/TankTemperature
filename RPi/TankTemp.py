@@ -8,6 +8,7 @@ import argparse
 from datetime import datetime
 import traceback
 import logging
+import sys
 
 # Build argument parser, this allows you to parse comands from the cli
 parser = argparse.ArgumentParser(description='Automated water temperature monitoring system.')
