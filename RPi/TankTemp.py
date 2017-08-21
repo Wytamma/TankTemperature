@@ -9,38 +9,35 @@ from datetime import datetime
 import traceback
 import logging
 
-parser = argparse.ArgumentParser(
-    description='Automated water temperature monitoring system.')
-parser.add_argument(
-    '-i', '--interval', help='Sampling interval (mins)', type=float)
-parser.add_argument(
-    '-M', '--max', help='Maximum temperature before warning', required=True, type=float)
-parser.add_argument(
-    '-m', '--min', help='Minimum temperature before warning', required=True, type=float)
-parser.add_argument(
-    '-e', '--email', help='Who to Email', required=True)
+# Build argument parser, this allows you to parse comands from the cli
+parser = argparse.ArgumentParser(description='Automated water temperature monitoring system.')
+parser.add_argument('-i', '--interval', help='Sampling interval (mins)', type=float)
+args = vars(parser.parse_args())
 
+# Set up logging
 logging.basicConfig(filename='TankTemp.log',
                     level=logging.DEBUG,
                     format='%(asctime)s %(levelname)s %(name)s %(message)s'
                     )
 logger = logging.getLogger(__name__)
 
-args = vars(parser.parse_args())
+# Set up emailer
 gmail = GMail('TankTemp <wytamma@gmail.com>', EMAIL_PASSWORD)
 
-def email(msgText, Email):
+
+def email(msgSubject, msgText, Email):
     """Sends msgText to Email"""
     msg = Message(
         msgText,
         to='%s <%s>' % (Email, Email),
         text=msgText
         )
-    gmail.send(msg)\
+    gmail.send(msg)
 
-# get all probes
+
+print("Adding probes to database")
+# add probe to DB if not in it already
 probe_IDs = []
-
 for filename in os.listdir("/sys/bus/w1/devices"):
     if not fnmatch.fnmatch(filename, '28-*'):
         continue
@@ -48,8 +45,6 @@ for filename in os.listdir("/sys/bus/w1/devices"):
 
 probes = [probe['probe_ID'] for probe in requests.get(API_BASE_URL + '/probes').json()['data']]
 
-# add probe to DB if not in it already
-print("Adding probes to database")
 for probe_ID in probe_IDs:
     if probe_ID in probes:
         continue
@@ -59,46 +54,96 @@ for probe_ID in probe_IDs:
         )
     print(r.json()['message'])
 
-# Vars
-minTemp = args['min']
-maxTemp = args['max']
-records = []
+# default vars
 samping_interval = args['interval'] or 10  # mins
 
+records = []  # stores temperture records in memory before sending them to DB
+
 while True:
+    # get fresh probe info
+    r = requests.get(API_BASE_URL + '/probes').json()['data']
+    if r.status_code == 200:
+        probesInfoFromAPI = r.json()['data']
+    else:
+        probesInfoFromAPI = []
+
+    # loop through all the probe datafiles
     for filename in os.listdir("/sys/bus/w1/devices"):
         record = {}
+
+        # Only read files that match the probe ID format (all DS18B20 probes
+        # start with '28-')
         if not fnmatch.fnmatch(filename, '28-*'):
             continue
 
         with open("/sys/bus/w1/devices/" + filename + "/w1_slave") as f_obj:
+            # read data and check for probe errors
             lines = f_obj.readlines()
-            if lines[0].find("YES"):
-                pok = lines[1].find('=')
-                record['temperature'] = float(lines[1][pok+1:pok+6])/1000
-                record['probe_ID'] = filename
-                record['time'] = int(round(time.time() * 1000))  # milliseconds
-                records.append(record)
+            if lines[0].find("YES") is -1:
+                email(
+                    "Error reading sensor with ID: %s" % (
+                        filename), args['email']
+                    )
+            pok = lines[1].find('=')
 
-                now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-                print(now, record['probe_ID'], str(record['temperature'])+"˚C")
+            # Build record
+            record['temperature'] = float(lines[1][pok+1:pok+6])/1000
+            record['probe_ID'] = filename
+            record['time'] = int(round(time.time() * 1000))  # milliseconds
 
-                t = record['temperature']
-                if t > maxTemp or t < minTemp:
-                    msg = "WARNING: %s is outside the temperature range!!!" % record['probe_ID']
-                    msg2 = "Current temperature = %s˚C" % record['temperature']
-                    print(msg)
-                    print("Sending email to %s" % args['email'])
+            # Add record to list for later upload
+            # this saves on the number of requests = $
+            records.append(record)
 
-                    try:
-                        email(msg+"\n"+msg2+"\n"+WEB_APP_URL, args['email'])
-                        print("Email sent!")
-                    except:
-                        print("Email failed to send!")
-                        logger.error(traceback.format_exc())
+            defaultInfo = {
+                "probe_ID": record['probe_ID'],
+                "name": None,
+                "maxTemp": 28,
+                "minTemp": 20,
+                "alertSnooze": int(round(time.time() * 1000)),
+                "whoToEmail": ['wytamma.wirth@me.com'],
+                "default": True
+                }
 
-            else:
-                email("Error reading sensor with ID: %s" % (filename), args['email'])
+            # Find record info
+            InfoFromAPI = next((probe for probe in probesInfoFromAPI if probe["probe_ID"] == record['probe_ID']), False)
+
+            if InfoFromAPI is False:
+                logger.error("Something broke...")
+                logger.error(record)
+                logger.error(probesInfoFromAPI)
+                logger.error(traceback.format_exc())
+                InfoFromAPI = defaultInfo
+
+            # Update the console
+            now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            print(now, record['probe_ID'], str(record['temperature'])+"˚C")
+
+            t = record['temperature']
+            maxTemp = InfoFromAPI['maxTemp']
+            minTemp = InfoFromAPI['minTemp']
+
+            if t < maxTemp and t > minTemp:
+                # inside range
+                continue
+
+            # Warning
+            msg = "WARNING: %s is outside the temperature range!!!" % record['probe_ID']
+            msg2 = "Current temperature = %s˚C" % t
+            print(msg)
+
+            if time.time() < InfoFromAPI['alertSnooze']:
+                print("Email snoozed")
+                continue
+
+            for Email in InfoFromAPI['whoToEmail']:
+                print("Sending email to %s" % Email)
+                try:
+                    email(msg, msg+"\n"+msg2+"\n"+WEB_APP_URL+"\n"+InfoFromAPI, Email)
+                    print("Email sent!")
+                except:
+                    logger.error("Email failed to send!")
+                    logger.error(traceback.format_exc())
 
     # attempt insert
     try:
@@ -111,7 +156,8 @@ while True:
             # If it fails don't reset so we can try again later
             records = []
         else:
-            print("Insert Failed")
+            logger.error("Insert Failed")
+            logger.error(traceback.format_exc())
             print(r.json()['message'])
     except:
         print("Request Failed")
