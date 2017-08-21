@@ -15,11 +15,13 @@ parser.add_argument('-i', '--interval', help='Sampling interval (mins)', type=fl
 args = vars(parser.parse_args())
 
 # Set up logging
-logging.basicConfig(filename='TankTemp.log',
-                    level=logging.DEBUG,
-                    format='%(asctime)s %(levelname)s %(name)s %(message)s'
-                    )
+logging.basicConfig(filename='TankTemp.log',level=logging.DEBUG,format='%(asctime)s %(levelname)s %(name)s %(message)s')
 logger = logging.getLogger(__name__)
+ch = logging.StreamHandler(sys.stdout)
+ch.setLevel(logging.DEBUG)
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+ch.setFormatter(formatter)
+logger.addHandler(ch)
 
 # Set up emailer
 gmail = GMail('TankTemp <wytamma@gmail.com>', EMAIL_PASSWORD)
@@ -66,6 +68,7 @@ while True:
         probesInfoFromAPI = r.json()['data']
     else:
         probesInfoFromAPI = []
+
 
     # loop through all the probe datafiles
     for filename in os.listdir("/sys/bus/w1/devices"):
