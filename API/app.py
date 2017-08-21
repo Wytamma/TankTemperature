@@ -67,7 +67,7 @@ class Probelist(Resource):
         parser.add_argument('name', required=True)
         parser.add_argument('maxTemp', required=True, type=int)
         parser.add_argument('minTemp', required=True, type=int)
-        parser.add_argument('whoToEmail', required=True, type=list)
+        parser.add_argument('whoToEmail', required=True, action='append')
         parser.add_argument('alertSnooze', required=True, type=int)
 
         args = parser.parse_args()
