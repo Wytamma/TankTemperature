@@ -61,7 +61,7 @@ records = []  # stores temperture records in memory before sending them to DB
 
 while True:
     # get fresh probe info
-    r = requests.get(API_BASE_URL + '/probes').json()['data']
+    r = requests.get(API_BASE_URL + '/probes')
     if r.status_code == 200:
         probesInfoFromAPI = r.json()['data']
     else:
@@ -132,7 +132,7 @@ while True:
             msg2 = "Current temperature = %s˚C" % t
             print(msg)
 
-            if time.time() < InfoFromAPI['alertSnooze']:
+            if int(round(time.time() * 1000)) < InfoFromAPI['alertSnooze']:
                 print("Email snoozed")
                 continue
 
