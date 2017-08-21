@@ -3,31 +3,36 @@ from pymongo import MongoClient
 from flask_restful import Resource, reqparse, Api
 from _passwords import MONGO_URI
 from flask_cors import CORS
+import time
+
 
 app = Flask(__name__)
 CORS(app)
 api = Api(app)
-
-
 app.config.from_object('config.BaseConfig')
 client = MongoClient(MONGO_URI)
-# db = client.test
 db = client.production
 
 
 @app.route('/')
 def index():
-    return "Welcome.", 200
+    return """Welcome to TankTemp, an automated water temperature
+            monitoring system.""", 200
 
 
 class Probelist(Resource):
 
     def add_probe(self, probe_ID):
-        probe = {"probe_ID": probe_ID,
-                 "name": None,
-                 }
+        probe = {
+            "probe_ID": probe_ID,
+            "name": None,  # user friendly name of probe/tank
+            "maxTemp": 28,  # default max temperture to alert at
+            "minTemp": 20,  # default min temperture to alert at
+            "whoToEmail": [],  # list of people to alert when limit reached
+            "alertSnooze": time.time(),  # time to wait until sending next alert
+            }
 
-        # search for probe_ID if not
+        # search for probe_ID if not found: insert new
         object_id = db.tanks.update_one(
             {"probe_ID": probe_ID},
             {"$setOnInsert": probe},
@@ -60,6 +65,10 @@ class Probelist(Resource):
         parser = reqparse.RequestParser()
         parser.add_argument('probe_ID', required=True)
         parser.add_argument('name', required=True)
+        parser.add_argument('maxTemp', required=True, type=int)
+        parser.add_argument('minTemp', required=True, type=int)
+        parser.add_argument('whoToEmail', required=True, type=list)
+        parser.add_argument('alertSnooze', required=True, type=int)
 
         args = parser.parse_args()
         result = self.update_probe(args)
@@ -74,7 +83,7 @@ class Temp(Resource):
         parser = reqparse.RequestParser()
         parser.add_argument('limit', type=int)
         args = parser.parse_args()
-        limit = args['limit'] or int((60*48)/10) # 10 mins in a day
+        limit = args['limit'] or int((60*24)/10)  # 24 hours of records 
         records = db.temps.find(
             {'probe_ID': probe_ID}, {'_id': False}
             ).sort([("_id", -1)]).limit(limit)
