@@ -69,12 +69,13 @@ class Tank extends React.Component {
     this.getData(100)
 
   }
-  render() {
-
+  componentDidMount() {
     setInterval(() => {
       console.log("Updating data...");
       this.getData(100)
     }, (1000*60*10));
+  }
+  render() {
 
     return (
 
