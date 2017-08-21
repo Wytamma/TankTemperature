@@ -53,8 +53,8 @@ class Probelist(Resource):
         args = parser.parse_args()
         result = self.add_probe(args['probe_ID'])
         if result.upserted_id:
-            return {"message": "Probe Added"}, 201
-        return {"message": "Probe %s already exists" % args['probe_ID']}, 400
+            return {"message": "Probe %s added to database." % args['probe_ID']}, 201
+        return {"message": "Probe %s already exists." % args['probe_ID']}, 400
 
     def put(self):
         parser = reqparse.RequestParser()
@@ -64,8 +64,8 @@ class Probelist(Resource):
         args = parser.parse_args()
         result = self.update_probe(args)
         if result.modified_count:
-            return {"message": "Probe modified"}, 200
-        return {"message": "Probe not modified"}, 400
+            return {"message": "Probe %s modified." % args['probe_ID']}, 200
+        return {"message": "Probe %s not modified." % args['probe_ID']}, 400
 
 
 class Temp(Resource):
@@ -92,8 +92,8 @@ class Temp(Resource):
 
         result = db.temps.insert_one(args)
         if result.inserted_id:
-            return {"message": "Added to probe %s" % probe_ID}, 201
-        return {"message": "Failed to insert"}, 400
+            return {"message": "Added to probe %s." % probe_ID}, 201
+        return {"message": "Failed to insert."}, 400
 
 
 
@@ -109,7 +109,7 @@ class Temps(Resource):
         """Add to probes from list"""
         args = self.parser.parse_args()
         results = db.temps.insert_many(args['data'])
-        return {"message": "Added %s records" % len(results.inserted_ids)}, 201
+        return {"message": "Added %s records." % len(results.inserted_ids)}, 201
 
 
 api.add_resource(Probelist, '/probes')
