@@ -3,7 +3,7 @@ from pymongo import MongoClient
 from flask_restful import Resource, reqparse, Api
 from _passwords import MONGO_URI
 from flask_cors import CORS
-import time
+from time import time
 
 
 app = Flask(__name__)
@@ -28,8 +28,8 @@ class Probelist(Resource):
             "name": None,  # user friendly name of probe/tank
             "maxTemp": 28,  # default max temperture to alert at
             "minTemp": 20,  # default min temperture to alert at
-            "whoToEmail": [],  # list of people to alert when limit reached
-            "alertSnooze": time.time(),  # time to wait until sending next alert
+            "whoToEmail": ['wytamma.wirth@me.com'],  # list of people to alert when limit reached
+            "alertSnooze": int(round(time.time() * 1000)),  # time to wait until sending next alert
             }
 
         # search for probe_ID if not found: insert new
@@ -83,7 +83,7 @@ class Temp(Resource):
         parser = reqparse.RequestParser()
         parser.add_argument('limit', type=int)
         args = parser.parse_args()
-        limit = args['limit'] or int((60*24)/10)  # 24 hours of records 
+        limit = args['limit'] or int((60*24)/10)  # 24 hours of records
         records = db.temps.find(
             {'probe_ID': probe_ID}, {'_id': False}
             ).sort([("_id", -1)]).limit(limit)
