@@ -72,7 +72,9 @@ class Tank extends React.Component {
   componentDidMount() {
     setInterval(() => {
       console.log("Updating data...");
-      this.getData(100)
+      if (this.refs.myRef) {
+        this.getData(100)
+      }
     }, (1000*60*10));
   }
   render() {
@@ -80,7 +82,7 @@ class Tank extends React.Component {
     return (
 
       <Col sm={12} md={12} lg={6}>
-      <div style={styles.card}>
+      <div style={styles.card} ref="myRef">
         <div style={styles.HeaderContainer}>
         <Header title={this.props.probe.name ? this.props.probe.name:this.props.probe.probe_ID}/>
         </div>
