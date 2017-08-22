@@ -29,7 +29,7 @@ class Probelist(Resource):
             "maxTemp": 28,  # default max temperture to alert at
             "minTemp": 20,  # default min temperture to alert at
             "whoToEmail": ['wytamma.wirth@me.com'],  # list of people to alert when limit reached
-            "alertSnooze": int(round(time.time() * 1000)),  # time to wait until sending next alert
+            "alertSnooze": int(round(time() * 1000)),  # time to wait until sending next alert
             }
 
         # search for probe_ID if not found: insert new
