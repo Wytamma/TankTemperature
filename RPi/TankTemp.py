@@ -84,7 +84,7 @@ while True:
             # read data and check for probe errors
             lines = f_obj.readlines()
             if lines[0].find("YES") is -1:
-                logger.error("Bad read."))
+                logger.error("Bad read.")
                 logger.error(traceback.format_exc())
                 email("Error reading sensor",
                     "Error reading sensor with ID: %s" % (
