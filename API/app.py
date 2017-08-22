@@ -65,8 +65,8 @@ class Probelist(Resource):
         parser = reqparse.RequestParser()
         parser.add_argument('probe_ID', required=True)
         parser.add_argument('name', required=True)
-        parser.add_argument('maxTemp', required=True, type=int)
-        parser.add_argument('minTemp', required=True, type=int)
+        parser.add_argument('maxTemp', required=True, type=float)
+        parser.add_argument('minTemp', required=True, type=float)
         parser.add_argument('whoToEmail', required=True, action='append')
         parser.add_argument('alertSnooze', required=True, type=int)
 
