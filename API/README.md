@@ -11,7 +11,8 @@ $ flask run
 Production
 ```
 $ zappa init
-$ zappa deploy
+$ zappa deploy production
+$ zappa update production
 ```
 
 ### API endpoints
