@@ -6,39 +6,6 @@ import { Card, Icon } from 'semantic-ui-react'
 import 'semantic-ui-css/semantic.min.css';
 import Toggle from 'react-toggle'
 
-const styles = {
-  card: {
-    borderRadius: 5,
-    borderStyle: "solid",
-    borderColor: "#2c3e50",
-    borderWidth: 1,
-    marginBottom: 20,
-    backgroundColor: "#ecf0f1",
-  },
-  HeaderContainer: {
-    backgroundColor: "#2c3e50",
-    textAlign: "center",
-  },
-  HeaderText: {
-    color: "#27ae60",
-    fontSize: 32,
-    padding: 5,
-  },
-  container: {
-    //padding: 5,
-  },
-  temp: {
-    width: "25%",
-    textAlign: "left",
-    padding: 0,
-  },
-  tempText: {
-  },
-  spark: {
-    width: "75%",
-  }
-};
-
 const mql = window.matchMedia(`(min-width: 850px)`);
 
 const round = (value, precision) => {
@@ -85,12 +52,7 @@ class Tank extends React.Component {
   componentWillUnmount() {
     this.state.mql.removeListener(this.mediaQueryChanged);
   }
-  mediaQueryChanged() {
-    this.setState({
-      mql: mql,
-      fluid: this.state.mql.matches,
-    });
-  }
+
   componentDidMount() {
     setInterval(() => {
       if (this.refs.myRef) {
@@ -105,7 +67,7 @@ class Tank extends React.Component {
       <Card fluid={!this.state.fluid}>
         <div style={{position: "absolute", paddingLeft:"90%", paddingTop:"1%"}}>
           <a style={{padding: 10}}>
-          <Icon size={20} name='info circle' />
+          <Icon name='info circle' />
           </a>
         </div>
         <Sparklines data={this.state.temps} height={80}>
@@ -162,14 +124,6 @@ class Tank extends React.Component {
     console.log("snooze");
   }
 }
-
-const Header = ({ title }) => {
-  return (
-      <p style={styles.HeaderText}>
-        {title}
-      </p>
-  );
-};
 
 
 

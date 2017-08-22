@@ -1,6 +1,5 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { Grid } from 'react-bootstrap';
 import Tank from "./TankTwo"
 import { Card } from 'semantic-ui-react'
 
