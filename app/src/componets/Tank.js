@@ -49,7 +49,8 @@ const setColor = (temps, maxVal, minVal) => {
     if (min < minVal || max > maxVal) {
       color = 'orange'
     }
-    if (temps[-1] < minVal || temps[-1] > maxVal) { //the most recnent value
+
+    if (temps[0] < minVal || temps[0] > maxVal) { //the most recnent value
       color = 'red'
     }
   return color
@@ -66,14 +67,14 @@ class Tank extends React.Component {
 
   componentWillMount() {
     console.log("Getting data...");
-    this.getData(100)
+    this.getData(100, this.props.probe.maxTemp, this.props.probe.minTemp)
 
   }
   componentDidMount() {
     setInterval(() => {
-      console.log("Updating data...");
       if (this.refs.myRef) {
-        this.getData(100)
+        console.log("Updating data...");
+        this.getData(100, this.props.probe.maxTemp, this.props.probe.minTemp)
       }
     }, (1000*60*10));
   }
@@ -105,17 +106,17 @@ class Tank extends React.Component {
 
     )
   }
-  getData = (limit) => {
+  getData = (limit, maxTemp, minTemp) => {
     fetch(_Urls.APIBASEURL + "/temps/" + this.props.probe.probe_ID + "?limit="+limit)
     .then(results => {
       return results.json();
     }).then(data => {
-      const reducedData = data.data.map(item => { return item.temperature }).reverse();
+      const reducedData = data.data.map(item => { return item.temperature });
       (data.data.length > 0) ?
       this.setState({
-        temp: round(data.data[0].temperature, 2)+"˚C",
-        temps: reducedData,
-        color: setColor(reducedData, 28, 20)
+        temp: round(reducedData[0], 2)+"˚C",
+        temps: reducedData.reverse(),
+        color: setColor(reducedData, maxTemp, minTemp)
       }):
       this.setState({temp: "No data"});
     })
