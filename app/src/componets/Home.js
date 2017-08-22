@@ -1,7 +1,8 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { Grid } from 'react-bootstrap';
-import Tank from "./Tank"
+import Tank from "./TankTwo"
+import { Card } from 'semantic-ui-react'
 
 class Home extends React.Component {
   constructor() {
@@ -20,9 +21,9 @@ class Home extends React.Component {
       )
     })
     return (
-      <Grid style={{width:"98%"}}>
+      <Card.Group>
         {probes}
-      </Grid>
+      </Card.Group>
     )
   }
 }
