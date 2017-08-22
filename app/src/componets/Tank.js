@@ -46,11 +46,12 @@ const setColor = (temps, maxVal, minVal) => {
   let color = 'green';
   let min = Math.min.apply(null, temps);
   let max = Math.max.apply(null, temps);
-    if (min < minVal || max > maxVal) {
+    if (min < minVal ) {
+      color = 'orange'
+    } else if (max > maxVal) {
       color = 'orange'
     }
-
-    if (temps[0] < minVal || temps[0] > maxVal) { //the most recnent value
+    if (temps[temps.length - 1] < minVal || temps[temps.length - 1] > maxVal) { //the most recnent value
       color = 'red'
     }
   return color
@@ -111,11 +112,11 @@ class Tank extends React.Component {
     .then(results => {
       return results.json();
     }).then(data => {
-      const reducedData = data.data.map(item => { return item.temperature });
+      const reducedData = data.data.map(item => { return item.temperature }).reverse();
       (data.data.length > 0) ?
       this.setState({
-        temp: round(reducedData[0], 2)+"˚C",
-        temps: reducedData.reverse(),
+        temp: round(reducedData[reducedData.length - 1], 2)+"˚C",
+        temps: reducedData,
         color: setColor(reducedData, maxTemp, minTemp)
       }):
       this.setState({temp: "No data"});
