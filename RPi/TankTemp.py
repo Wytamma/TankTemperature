@@ -31,7 +31,7 @@ gmail = GMail('TankTemp <wytamma@gmail.com>', EMAIL_PASSWORD)
 def email(msgSubject, msgText, Email):
     """Sends msgText to Email"""
     msg = Message(
-        msgText,
+        msgSubject,
         to='%s <%s>' % (Email, Email),
         text=msgText
         )
@@ -84,10 +84,13 @@ while True:
             # read data and check for probe errors
             lines = f_obj.readlines()
             if lines[0].find("YES") is -1:
-                email(
+                logger.error("Bad read."))
+                logger.error(traceback.format_exc())
+                email("Error reading sensor",
                     "Error reading sensor with ID: %s" % (
-                        filename), args['email']
+                        filename), 'wytamma.wirth@me.com'
                     )
+                continue
             pok = lines[1].find('=')
 
             # Build record
