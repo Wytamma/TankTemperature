@@ -76,7 +76,7 @@ class Tank extends React.Component {
           </Card.Header>
           <Card.Meta>
             <span style={{fontSize:12}} className='date'>
-              Past {this.state.hours} hours: {this.state.min} - {this.state.max}˚C
+              {this.state.hours ? "Past " + this.state.hours + " hours: " + this.state.min + " - " + this.state.max + "˚C":""}
             </span>
           </Card.Meta>
           <Card.Description style={{fontSize:18}}>

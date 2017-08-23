@@ -2,6 +2,7 @@ import React from 'react';
 import MaterialTitlePanel from './material_title_panel';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom'
+import logo from './logo.png'
 
 const styles = {
   sidebar: {
@@ -35,6 +36,9 @@ const SidebarContent = (props) => {
         <Link to="/" style={styles.sidebarLink}>Home</Link>
         <Link to="/about" style={styles.sidebarLink}>About</Link>
         <div style={styles.divider} />
+        <div style={{textAlign:"center"}}>
+        <img alt="logo" src={logo} style={{width: "80%", paddingTop:15}}/>
+        </div>
       </div>
     </MaterialTitlePanel>
   );
