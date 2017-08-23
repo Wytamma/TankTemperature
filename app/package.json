@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "prop-types": "^15.5.10",
     "react": "^15.6.1",
     "react-bootstrap": "^0.31.2",
     "react-dom": "^15.6.1",
@@ -11,7 +12,10 @@
     "react-router-dom": "^4.1.2",
     "react-scripts": "1.0.11",
     "react-sidebar": "^2.3.2",
-    "react-sparklines": "^1.7.0"
+    "react-sparklines": "^1.7.0",
+    "react-toggle": "^4.0.1",
+    "semantic-ui-css": "^2.2.12",
+    "semantic-ui-react": "^0.71.5"
   },
   "scripts": {
     "start": "react-scripts start",

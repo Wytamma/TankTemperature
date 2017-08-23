@@ -13,18 +13,16 @@ const round = (value, precision) => {
     return Math.round(value * multiplier) / multiplier;
 }
 
-const setColor = (temps, maxVal, minVal) => {
+const setColor = (temps, max, min, maxVal, minVal) => {
   let color = 'green';
-  let min = Math.min.apply(null, temps);
-  let max = Math.max.apply(null, temps);
-    if (min < minVal ) {
+  if (min < minVal ) {
       color = 'orange'
-    } else if (max > maxVal) {
+  } else if (max > maxVal) {
       color = 'orange'
-    }
-    if (temps[temps.length - 1] < minVal || temps[temps.length - 1] > maxVal) { //the most recnent value
+  }
+  if (temps[temps.length - 1] < minVal || temps[temps.length - 1] > maxVal) { //the most recnent value
       color = 'red'
-    }
+  }
   return color
 }
 
@@ -36,7 +34,7 @@ class Tank extends React.Component {
       fluid: false,
       temp:"",
       temps:[],
-      snooze: false
+      snooze: false,
     };
     this.mediaQueryChanged = this.mediaQueryChanged.bind(this);
 
@@ -44,10 +42,9 @@ class Tank extends React.Component {
 
   componentWillMount() {
     mql.addListener(this.mediaQueryChanged);
-    this.setState({mql: mql, fluid: mql.matches});
+    this.setState({mql: mql, fluid: mql.matches, alertSnooze: this.props.probe.alertSnooze});
     console.log("Getting data...");
     this.getData(100, this.props.probe.maxTemp, this.props.probe.minTemp)
-
   }
   componentWillUnmount() {
     this.state.mql.removeListener(this.mediaQueryChanged);
@@ -79,7 +76,7 @@ class Tank extends React.Component {
           </Card.Header>
           <Card.Meta>
             <span style={{fontSize:12}} className='date'>
-              10:11:13 23/8/17
+              Past {this.state.hours} hours: {this.state.min} - {this.state.max}˚C
             </span>
           </Card.Meta>
           <Card.Description style={{fontSize:18}}>
@@ -90,7 +87,7 @@ class Tank extends React.Component {
           <label >
             <span>Snooze alerts  </span>
             <Toggle
-              defaultChecked={this.state.snooze}
+              defaultChecked={(this.state.alertSnooze <= new Date().getTime()) ? false : true}
               onChange={this.handleSnoozeChange}
               style={{marginBottom:0}}/>
           </label>
@@ -99,30 +96,76 @@ class Tank extends React.Component {
 
     )
   }
-  getData = (limit, maxTemp, minTemp) => {
+  getData = (limit, maxVal, minVal) => {
     fetch(_Urls.APIBASEURL + "/temps/" + this.props.probe.probe_ID + "?limit="+limit)
     .then(results => {
       return results.json();
     }).then(data => {
       const reducedData = data.data.map(item => { return item.temperature }).reverse();
+      const min = Math.min.apply(null, reducedData);
+      const max = Math.max.apply(null, reducedData);
       (data.data.length > 0) ?
       this.setState({
         temp: round(reducedData[reducedData.length - 1], 2)+"˚C",
         temps: reducedData,
-        color: setColor(reducedData, maxTemp, minTemp)
+        color: setColor(reducedData, max, min, maxVal, minVal),
+        max: round(max, 1),
+        min: round(min, 1),
+        hours: round(((((data.data[0].time - data.data[data.data.length - 1].time)/1000)/60)/60)),
+
       }):
       this.setState({temp: "No data"});
+      //
     })
   }
+
   mediaQueryChanged() {
     this.setState({
       mql: mql,
       fluid: this.state.mql.matches,
     });
   }
-  handleSnoozeChange() {
-    console.log("snooze");
+
+  handleSnoozeChange = (event) => {
+    if (event.target.checked) {
+      // snooze
+      let hours = 7
+      let alertSnooze = (new Date().getTime() + (1000 * 60 * 60 * hours));
+      this.updateAlertSnooze(alertSnooze)
+    } else {
+      // reset snooze
+      this.updateAlertSnooze(new Date().getTime())
+    }
+
   }
+
+  updateAlertSnooze = (newAlertSnooze) => {
+    let data = this.props.probe
+    data.alertSnooze = newAlertSnooze
+    fetch(_Urls.APIBASEURL + "/probes", {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data),
+        })
+        .then(function(response) {
+        if (!response.ok) {
+            console.log("not ok");
+            console.log(response.json().message);
+            throw Error(response.statusText);
+        }
+        return response;
+        })
+        .then(reponse => {
+          this.setState({
+            alertSnooze: newAlertSnooze
+          });
+        }).catch(err => {
+            console.log('request failed', err);
+        });
+  }
+
 }
 
 
