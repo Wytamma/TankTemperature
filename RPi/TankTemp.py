@@ -149,7 +149,7 @@ while True:
             for Email in InfoFromAPI['whoToEmail']:
                 print("Sending email to %s" % Email)
                 try:
-                    email(msg, msg+"\n"+msg2+"\n"+WEB_APP_URL+"\n"+str(InfoFromAPI), Email)
+                    email(msg, msg+"\n"+msg2+"\n"+WEB_APP_URL, Email)
                     print("Email sent!")
                 except:
                     logger.error("Email failed to send!")
