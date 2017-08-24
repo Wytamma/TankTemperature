@@ -2,7 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import _Urls from '../_Urls'
 import { Sparklines, SparklinesLine } from 'react-sparklines';
-import { Card, Icon } from 'semantic-ui-react'
+import { Card, Icon, Popup } from 'semantic-ui-react'
 import 'semantic-ui-css/semantic.min.css';
 import Toggle from 'react-toggle'
 
@@ -61,12 +61,16 @@ class Tank extends React.Component {
   render() {
 
     return (
-      <Card fluid={!this.state.fluid}>
+      <Card fluid={!this.state.fluid} ref="myRef">
         <div style={{position: "absolute", paddingLeft:"90%", paddingTop:"1%"}}>
           <a style={{padding: 10}}>
           <Icon name='info circle' />
           </a>
         </div>
+        { (new Date().getTime() - this.state.lastRecodTime) > (1000*60*20) ? <Popup trigger={<Icon style={{position: "absolute"}} name='warning circle' color="red"/>}>
+          Connection error!<br/>Data is not current.<br/>{round(((((new Date().getTime() - this.state.lastRecodTime)/1000)/60)/60), 2)} hours old.
+        </Popup>:""}
+
         <Sparklines data={this.state.temps} height={80}>
             <SparklinesLine color={this.state.color} style={{ strokeWidth: 2}} />
         </Sparklines>
@@ -111,8 +115,8 @@ class Tank extends React.Component {
         color: setColor(reducedData, max, min, maxVal, minVal),
         max: round(max, 1),
         min: round(min, 1),
-        hours: round(((((data.data[0].time - data.data[data.data.length - 1].time)/1000)/60)/60)),
-
+        hours: round(((((data.data[0].time - data.data[data.data.length - 1].time)/1000)/60)/60), 2),
+        lastRecodTime: data.data[0].time,
       }):
       this.setState({temp: "No data"});
       //
