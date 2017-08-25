@@ -115,7 +115,7 @@ class Tank extends React.Component {
         color: setColor(reducedData, max, min, maxVal, minVal),
         max: round(max, 1),
         min: round(min, 1),
-        hours: round(((((data.data[0].time - data.data[data.data.length - 1].time)/1000)/60)/60), 2),
+        hours: round(((((data.data[0].time - data.data[data.data.length - 1].time)/1000)/60)/60), 1),
         lastRecodTime: data.data[0].time,
       }):
       this.setState({temp: "No data"});

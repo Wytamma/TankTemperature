@@ -51,6 +51,7 @@ probes = [probe['probe_ID'] for probe in requests.get(API_BASE_URL + '/probes').
 for probe_ID in probe_IDs:
     if probe_ID in probes:
         continue
+
     r = requests.post(
         API_BASE_URL + '/probes',
         data={'probe_ID': probe_ID}
@@ -73,21 +74,15 @@ while True:
     except requests.ConnectionError:
         probesInfoFromAPI = []
 
-
     # loop through all the probe datafiles
-    for filename in os.listdir("/sys/bus/w1/devices"):
+    for probe in probesInfoFromAPI:
+        filename = probe['probe_ID']
         record = {}
-
-        # Only read files that match the probe ID format (all DS18B20 probes
-        # start with '28-')
-        if not fnmatch.fnmatch(filename, '28-*'):
-            continue
-
         with open("/sys/bus/w1/devices/" + filename + "/w1_slave") as f_obj:
             # read data and check for probe errors
             lines = f_obj.readlines()
             if lines[0].find("YES") is -1:
-                logger.error("Bad read.")
+                logger.error("Bad read. " + filename)
                 logger.error(traceback.format_exc())
                 email("Error reading sensor",
                     "Error reading sensor with ID: %s" % (
