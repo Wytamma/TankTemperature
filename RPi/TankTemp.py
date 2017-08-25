@@ -78,7 +78,8 @@ while True:
     for probe in probesInfoFromAPI:
         filename = probe['probe_ID']
         record = {}
-
+        # retry function ()
+        # record = getRecord(filename)
         with open("/sys/bus/w1/devices/" + filename + "/w1_slave") as f_obj:
             # read data and check for probe errors
             lines = f_obj.readlines()
@@ -111,25 +112,7 @@ while True:
             # this saves on the number of requests = $
             records.append(record)
 
-            defaultInfo = {
-                "probe_ID": record['probe_ID'],
-                "name": None,
-                "maxTemp": 28,
-                "minTemp": 20,
-                "alertSnooze": int(round(time.time() * 1000)),
-                "whoToEmail": ['wytamma.wirth@me.com'],
-                "default": True
-                }
-
-            # Find record info
-            InfoFromAPI = next((probe for probe in probesInfoFromAPI if probe["probe_ID"] == record['probe_ID']), False)
-
-            if InfoFromAPI is False:
-                logger.error("Something broke...")
-                logger.error(record)
-                logger.error(probesInfoFromAPI)
-                logger.error(traceback.format_exc())
-                InfoFromAPI = defaultInfo
+            InfoFromAPI = probe
 
             # Update the console
             now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
