@@ -78,6 +78,7 @@ while True:
     for probe in probesInfoFromAPI:
         filename = probe['probe_ID']
         record = {}
+
         with open("/sys/bus/w1/devices/" + filename + "/w1_slave") as f_obj:
             # read data and check for probe errors
             lines = f_obj.readlines()
@@ -96,6 +97,16 @@ while True:
             record['probe_ID'] = filename
             record['time'] = int(round(time.time() * 1000))  # milliseconds
 
+            if record['temperature'] == 0:
+                # retry instead
+                logger.error("Bad read. " + record['probe_ID'])
+                logger.error("Temperature == 0˚C")
+                logger.error(traceback.format_exc())
+                email("Error reading sensor",
+                    "Error reading sensor with ID: %s \n temp == 0" % (
+                        filename), 'wytamma.wirth@me.com'
+                    )
+                continue
             # Add record to list for later upload
             # this saves on the number of requests = $
             records.append(record)
