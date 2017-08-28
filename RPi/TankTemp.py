@@ -1,7 +1,6 @@
 import os
 import fnmatch
 import time
-from gmail import GMail, Message
 from _passwords import EMAIL_PASSWORD, API_BASE_URL, WEB_APP_URL
 import requests
 import argparse
@@ -9,6 +8,7 @@ from datetime import datetime
 import traceback
 import logging
 import sys
+from utils import email, mode_average
 
 # Build argument parser, this allows you to parse comands from the cli
 parser = argparse.ArgumentParser(description='Automated water temperature monitoring system.')
@@ -24,18 +24,6 @@ formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(messag
 ch.setFormatter(formatter)
 logger.addHandler(ch)
 
-# Set up emailer
-gmail = GMail('TankTemp <wytamma@gmail.com>', EMAIL_PASSWORD)
-
-
-def email(msgSubject, msgText, Email):
-    """Sends msgText to Email"""
-    msg = Message(
-        msgSubject,
-        to='%s <%s>' % (Email, Email),
-        text=msgText
-        )
-    gmail.send(msg)
 
 
 print("Adding probes to database")
@@ -80,6 +68,20 @@ while True:
         record = {}
         # retry function ()
         # record = getRecord(filename)
+        temperatures = []
+        for _ in range(3):
+            try:
+                # retry 3 times
+                temperatures.append(getTemperatureFromProbe(filename))
+            except:
+                logger.error("Bad read. " + filename)
+                break
+
+        if len(temperatures) > 3:
+            continue
+
+
+
         with open("/sys/bus/w1/devices/" + filename + "/w1_slave", 'r') as f_obj:
             # TODO: I should sample 3 times and take the mode.
             # Or the adverage of the 2 closest values.
