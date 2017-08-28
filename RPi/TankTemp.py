@@ -106,13 +106,15 @@ while True:
         temperatures = []
         try:
             # build list of 3 samples to take datafrom
-            for _ in range(3):
+            for i in range(3):
+                print("Probe: %s Sample: %s" % (filename, i))
                 # retry 3 times if fails to read
                 # waiting 1s between each retry
                 temperatures.append(getTemperatureFromProbe(filename))
         except:
             logger.error("Bad read. " + filename)
             logger.error("One sample failed 3 times")
+            logger.error(traceback.format_exc())
             continue
 
         if len(temperatures) != 3:
