@@ -80,7 +80,11 @@ while True:
         record = {}
         # retry function ()
         # record = getRecord(filename)
-        with open("/sys/bus/w1/devices/" + filename + "/w1_slave") as f_obj:
+        with open("/sys/bus/w1/devices/" + filename + "/w1_slave", 'r') as f_obj:
+            # TODO: I should sample 3 times and take the mode.
+            # Or the adverage of the 2 closest values.
+            # I'm gettting some weird readings e.g. 0˚C, 18˚C
+
             # read data and check for probe errors
             lines = f_obj.readlines()
             if lines[0].find("YES") is -1:
