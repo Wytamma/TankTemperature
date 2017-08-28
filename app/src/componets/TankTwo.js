@@ -2,7 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import _Urls from '../_Urls'
 import { Sparklines, SparklinesLine } from 'react-sparklines';
-import { Card, Icon, Popup, Button} from 'semantic-ui-react'
+import { Card, Icon, Popup } from 'semantic-ui-react'
 import 'semantic-ui-css/semantic.min.css';
 import Toggle from 'react-toggle'
 import TankModal from './Modal'
@@ -63,14 +63,12 @@ class Tank extends React.Component {
 
     return (
       <Card fluid={!this.state.fluid} ref="myRef">
-        <TankModal trigger={<div style={{position: "absolute", paddingLeft:"90%", paddingTop:"1%"}}>
-          <a style={{padding: 10}}>
-          <Icon name='info circle' />
-          </a>
-        </div>}
-        probe={this.props.probe}
+        <div style={{position: "absolute", paddingLeft:"90%", paddingTop:"1%"}}>
+        <TankModal
+          trigger={<a style={{padding: 10}}><Icon name='info circle'/></a>}
+          probe={this.props.probe}
         />
-
+        </div>
         { (new Date().getTime() - this.state.lastRecodTime) > (1000*60*20) ? <Popup trigger={<Icon style={{position: "absolute"}} name='warning circle' color="red"/>}>
           Connection error!<br/>Data is not current.<br/>{round(((((new Date().getTime() - this.state.lastRecodTime)/1000)/60)/60), 2)} hours old.
         </Popup>:""}
