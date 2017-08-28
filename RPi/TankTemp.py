@@ -107,7 +107,7 @@ while True:
         try:
             # build list of 3 samples to take datafrom
             for i in range(3):
-                logger.info("Probe: %s Sample: %s" % (filename, i+1)) 
+                logger.info("Probe: %s Sample: %s" % (filename, i+1))
                 # retry 3 times if fails to read
                 # waiting 1s between each retry
                 temperatures.append(getTemperatureFromProbe(filename))
@@ -115,6 +115,11 @@ while True:
             logger.error("Bad read. " + filename)
             logger.error("One sample failed 3 times")
             logger.error(traceback.format_exc())
+            email("Error reading sensor",
+                  "Error reading sensor with ID: %s \n %s" % (
+                    filename, traceback.format_exc()),
+                  'wytamma.wirth@me.com')
+
             continue
 
         if len(temperatures) != 3:
