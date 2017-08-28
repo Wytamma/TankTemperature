@@ -72,7 +72,7 @@ def getTemperatureFromProbe(filename):
         # Build record
         temperature = float(lines[1][pok+1:pok+6])/1000
 
-        if record['temperature'] == 0:
+        if temperature == 0:
             # retry instead
             logger.error("Bad read. " + record['probe_ID'])
             logger.error("Temperature == 0˚C")
