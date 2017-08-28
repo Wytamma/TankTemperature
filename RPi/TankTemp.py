@@ -54,7 +54,7 @@ for probe_ID in probe_IDs:
 @retry(stop=stop_after_attempt(3), wait=wait_fixed(1))
 def getTemperatureFromProbe(filename):
     """Get temperature data from probe."""
-
+    logger.info("Getting data from %s" % filename)
     with open("/sys/bus/w1/devices/" + filename + "/w1_slave", 'r') as f_obj:
         # TODO: I should sample 3 times and take the mode.
         # Or the adverage of the 2 closest values.
@@ -107,7 +107,7 @@ while True:
         try:
             # build list of 3 samples to take datafrom
             for i in range(3):
-                print("Probe: %s Sample: %s" % (filename, i))
+                logger.info("Probe: %s Sample: %s" % (filename, i+1)) 
                 # retry 3 times if fails to read
                 # waiting 1s between each retry
                 temperatures.append(getTemperatureFromProbe(filename))
