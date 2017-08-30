@@ -147,7 +147,8 @@ while True:
             continue
 
         # Warning
-        msg = "WARNING: %s is outside the temperature range!!!" % record['probe_ID']
+        probe_name = InfoFromAPI['name'] or record['probe_ID']
+        msg = "WARNING: %s is outside the temperature range!!!" % probe_name
         msg2 = "Current temperature = %s˚C" % t
         print(msg)
 
