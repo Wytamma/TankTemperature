@@ -1,24 +1,12 @@
 # TankTemperature
 Automated water temperature monitoring system.
 
-## Application cycle/idea
-### RPi
-- On start get list of probes attached to Rpi
-- Tell server to create Tanks in tanks table using IDs
-- Server will check if ID already exists else create a new tank entry
-  - e.g. {'probe_id':probe_id, 'Name':null}
-  - The Name key can be used for easy identification of each tank, however the probe_id is the main ID. This does lead to one obvious problem, the probe will have to remain in the same tank.  
-- while True:
-  - Recored temperature data in memory (enables some network interruption recovery)
-  - When memory data reaches someSize send data to server (minimize requests)
-  - If (temperature outside range): send alert
+### This system is built in three parts:
 
+*   A [Raspberry pi](https://www.raspberrypi.org/) that records data from temperature sensors
 
-### client (React.js)
-- On load request past 48hrs of data for each tank
-- Make request to server for data every Min
-  - Update sparkline
+*   This webapp, built with [React.js](https://facebook.github.io/react/) for viewing data
 
+*   A [Flask](http://flask.pocoo.org/) API backed by [MongoDB](https://www.mongodb.com/) that saves and sends the data
 
-## TODO:
-- Need to work out how much
+See the code on [Github](https://github.com/Wytamma/TankTemperature) or contact Wytamma: [wytamma.wirth@me.com](mailto:name@email.com)
