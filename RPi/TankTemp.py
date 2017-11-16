@@ -19,6 +19,7 @@ args = vars(parser.parse_args())
 
 # default vars
 samping_interval = args['interval'] or 10  # mins
+hostname = os.uname()[1]
 
 print("Starting...")
 
@@ -46,7 +47,8 @@ for probe_ID in probe_IDs:
     print("Adding probe %s to database" % probe_ID)
     r = requests.post(
         API_BASE_URL + '/probes',
-        data={'probe_ID': probe_ID}
+        data={'probe_ID': probe_ID,
+              'hostname': hostname}
         )
     print(r.json()['message'])
 
@@ -83,7 +85,6 @@ records = []  # stores temperture records in memory before sending them to DB
 while True:
     # get fresh probe info
     try:
-        hostname = os.uname()[1]
         r = requests.get(API_BASE_URL + '/probes?hostname=' + hostname)
         if r.status_code == 200:
             probesInfoFromAPI = r.json()['data']
