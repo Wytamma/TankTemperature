@@ -1,0 +1,12 @@
+{
+   "index": "index.html",
+   "region": "ap-southeast-2",
+   "uploadDir": "build",
+   "prefix": "",
+   "exclude": [],
+   "corsConfiguration": [],
+   "enableCloudfront": false,
+   "retries": 20,
+   "domain": "tanktemp.wytamma.com",
+   "configFile": ".s3-website.json"
+}

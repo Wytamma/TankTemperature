@@ -3,7 +3,7 @@ Automated water temperature monitoring system API.
 
 local
 ```
-$ export FLASK_APP=hello.py
+$ export FLASK_APP=app.py
 $ export FLASK_DEBUG=1
 $ flask run
 ```

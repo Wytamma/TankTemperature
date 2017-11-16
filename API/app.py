@@ -16,13 +16,13 @@ db = client.production
 
 @app.route('/')
 def index():
-    return """Welcome to TankTemp, an automated water temperature
+    return """Welcome to TankTemp, an automated temperature
             monitoring system.""", 200
 
 
 class Probelist(Resource):
 
-    def add_probe(self, probe_ID):
+    def add_probe(self, probe_ID, hostname):
         probe = {
             "probe_ID": probe_ID,
             "name": None,  # user friendly name of probe/tank
@@ -30,6 +30,7 @@ class Probelist(Resource):
             "minTemp": 20,  # default min temperture to alert at
             "whoToEmail": ['wytamma.wirth@me.com'],  # list of people to alert when limit reached
             "alertSnooze": int(round(time() * 1000)),  # time to wait until sending next alert
+            "hostname": hostname
             }
 
         # search for probe_ID if not found: insert new
@@ -49,16 +50,24 @@ class Probelist(Resource):
         return object_id
 
     def get(self):
-        return {"data": list(db.tanks.find({}, {'_id': False}))}, 200
+        parser = reqparse.RequestParser()
+        parser.add_argument('hostname')  # ?hostname=pizero1
+        args = parser.parse_args()
+        return {"data": list(db.tanks.find({'hostname': args['hostname']}, {'_id': False}))}, 200
 
     def post(self):
         parser = reqparse.RequestParser()
         parser.add_argument('probe_ID', required=True)
+        parser.add_argument('hostname', required=True)
 
         args = parser.parse_args()
-        result = self.add_probe(args['probe_ID'])
+        result = self.add_probe(args['probe_ID'], args['hostname'])
         if result.upserted_id:
-            return {"message": "Probe %s added to database." % args['probe_ID']}, 201
+            return {
+                "message": "Probe %s added to database. (%s)" % (
+                    args['probe_ID'], args['hostname']
+                    )
+                }, 201
         return {"message": "Probe %s already exists." % args['probe_ID']}, 400
 
     def put(self):
@@ -69,6 +78,7 @@ class Probelist(Resource):
         parser.add_argument('minTemp', required=True, type=float)
         parser.add_argument('whoToEmail', required=True, action='append')
         parser.add_argument('alertSnooze', required=True, type=int)
+        parser.add_argument('hostname', required=True)
 
         args = parser.parse_args()
         result = self.update_probe(args)
@@ -105,7 +115,6 @@ class Temp(Resource):
         return {"message": "Failed to insert."}, 400
 
 
-
 class Temps(Resource):
     parser = reqparse.RequestParser()
     parser.add_argument('data',
@@ -118,7 +127,9 @@ class Temps(Resource):
         """Add to probes from list"""
         args = self.parser.parse_args()
         results = db.temps.insert_many(args['data'])
-        return {"message": "Added %s records." % len(results.inserted_ids)}, 201
+        return {
+            "message": "Added %s records." % len(results.inserted_ids)
+            }, 201
 
 
 api.add_resource(Probelist, '/probes')
