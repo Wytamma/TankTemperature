@@ -41,6 +41,9 @@ for filename in os.listdir("/sys/bus/w1/devices"):
 
 probes = [probe['probe_ID'] for probe in requests.get(API_BASE_URL + '/probes').json()['data']]
 
+print("probe_IDs", probe_IDs)
+print("probes", probes)
+
 for probe_ID in probe_IDs:
     if probe_ID in probes:
         continue
