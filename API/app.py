@@ -53,7 +53,14 @@ class Probelist(Resource):
         parser = reqparse.RequestParser()
         parser.add_argument('hostname')  # ?hostname=pizero1
         args = parser.parse_args()
-        return {"data": list(db.tanks.find({'hostname': args['hostname']}, {'_id': False}))}, 200
+        if args['hostname']:
+            return {
+                "data": list(db.tanks.find({'hostname': args['hostname']},
+                                           {'_id': False}))
+                }, 200
+        else:
+            return {"data": list(db.tanks.find({}, {'_id': False}))}, 200
+
 
     def post(self):
         parser = reqparse.RequestParser()
