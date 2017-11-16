@@ -83,7 +83,8 @@ records = []  # stores temperture records in memory before sending them to DB
 while True:
     # get fresh probe info
     try:
-        r = requests.get(API_BASE_URL + '/probes')
+        hostname = os.uname()[1]
+        r = requests.get(API_BASE_URL + '/probes?hostname=' + hostname)
         if r.status_code == 200:
             probesInfoFromAPI = r.json()['data']
         else:
