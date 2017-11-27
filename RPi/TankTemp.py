@@ -1,7 +1,7 @@
 import os
 import fnmatch
 import time
-from _passwords import API_BASE_URL, WEB_APP_URL
+from _passwords import API_BASE_URL, WEB_APP_URL, ROLLBAR
 import requests
 import argparse
 from datetime import datetime
@@ -10,7 +10,7 @@ import logging
 import sys
 from utils import email, mode_average
 from tenacity import retry, stop_after_attempt, wait_fixed
-
+import rollbar
 
 # Build argument parser, this allows you to parse comands from the cli
 parser = argparse.ArgumentParser(description='Automated water temperature monitoring system.')
@@ -31,6 +31,9 @@ ch.setLevel(logging.DEBUG)
 formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 ch.setFormatter(formatter)
 logger.addHandler(ch)
+
+# rollbar
+rollbar.init(ROLLBAR)
 
 # add probe to DB if not in it already
 probe_IDs = []
@@ -113,11 +116,10 @@ while True:
             logger.error("Bad read. " + filename)
             logger.error("One sample failed 3 times")
             logger.error(traceback.format_exc())
-            email("Error reading sensor",
-                  "Error reading sensor with ID: %s \n %s" % (
-                    filename, traceback.format_exc()),
-                  'wytamma.wirth@me.com')
-
+            rollbar.report_message(
+                "Error reading sensor with ID: %s \n %s" % (
+                    filename, traceback.format_exc()
+                    ), 'warning')
             continue
 
         if len(temperatures) != 3:
