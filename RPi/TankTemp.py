@@ -34,6 +34,7 @@ logger.addHandler(ch)
 
 # rollbar
 rollbar.init(ROLLBAR)
+rollbar.report_message("Starting: %s" % hostname, 'info')
 
 # add probe to DB if not in it already
 probe_IDs = []
